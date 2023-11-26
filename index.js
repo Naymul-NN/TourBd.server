@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
@@ -31,6 +31,7 @@ async function run() {
 const tabTourCollection = client.db('TourBd').collection('tabTour');
 const guidesCollection = client.db('TourBd').collection('tourGuides');
 const wishCollection = client.db('TourBd').collection('wishlist');
+const userBookingCollection = client.db('TourBd').collection('userBooking');
 
 // get the tabTour
 
@@ -45,11 +46,33 @@ app.get('/tourGuides', async(req, res) => {
     res.send(result);
 })
 
+// get single id
+
+app.get ('/tabTour/:id', async(req,res) =>{
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  const result = await tabTourCollection.findOne(query);
+  res.send(result);
+})
+
+app.get ('/tourGuide/:id', async(req,res) =>{
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  const result = await guidesCollection.findOne(query);
+  res.send(result);
+})
+
 // post the wishlist
 
 app.post('/wishlist', async (req, res) => {
   const item = req.body;
   const result = await wishCollection.insertOne(item)
+  res.send(result);
+})
+// post the booking of user
+app.post('/userBooking', async (req, res) => {
+  const item = req.body;
+  const result = await userBookingCollection.insertOne(item)
   res.send(result);
 })
 
