@@ -32,6 +32,8 @@ const tabTourCollection = client.db('TourBd').collection('tabTour');
 const guidesCollection = client.db('TourBd').collection('tourGuides');
 const wishCollection = client.db('TourBd').collection('wishlist');
 const userBookingCollection = client.db('TourBd').collection('userBooking');
+const allPackageCollection = client.db('TourBd').collection('allpackage');
+const storyCollection = client.db('TourBd').collection('clienTStory');
 
 // get the tabTour
 
@@ -39,10 +41,22 @@ app.get('/tabTour', async(req, res) => {
     const result = await tabTourCollection.find().toArray();
     res.send(result);
 })
+app.get('/allpackage', async(req, res) => {
+    const result = await allPackageCollection.find().toArray();
+    res.send(result);
+})
 
 // get the guide
 app.get('/tourGuides', async(req, res) => {
     const result = await guidesCollection.find().toArray();
+    res.send(result);
+})
+app.get('/clienTStory', async(req, res) => {
+    const result = await storyCollection.find().limit(4).toArray();
+    res.send(result);
+})
+app.get('/clienTStoryall', async(req, res) => {
+    const result = await storyCollection.find().toArray();
     res.send(result);
 })
 
@@ -55,10 +69,23 @@ app.get ('/tabTour/:id', async(req,res) =>{
   res.send(result);
 })
 
+app.get ('/storyone/:id', async(req,res) =>{
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  const result = await storyCollection.findOne(query);
+  res.send(result);
+})
+
 app.get ('/tourGuide/:id', async(req,res) =>{
   const id = req.params.id;
   const query = {_id: new ObjectId(id)}
   const result = await guidesCollection.findOne(query);
+  res.send(result);
+})
+app.get ('/allpackage/:id', async(req,res) =>{
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  const result = await allPackageCollection.findOne(query);
   res.send(result);
 })
 
