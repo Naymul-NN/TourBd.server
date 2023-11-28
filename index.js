@@ -34,11 +34,17 @@ const wishCollection = client.db('TourBd').collection('wishlist');
 const userBookingCollection = client.db('TourBd').collection('userBooking');
 const allPackageCollection = client.db('TourBd').collection('allpackage');
 const storyCollection = client.db('TourBd').collection('clienTStory');
+const usersCollection = client.db('TourBd').collection('users');
 
 // get the tabTour
 
 app.get('/tabTour', async(req, res) => {
     const result = await tabTourCollection.find().toArray();
+    res.send(result);
+})
+// get the users
+app.get('/users', async(req, res) => {
+    const result = await usersCollection.find().toArray();
     res.send(result);
 })
 app.get('/allpackage', async(req, res) => {
@@ -59,6 +65,18 @@ app.get('/clienTStoryall', async(req, res) => {
     const result = await storyCollection.find().toArray();
     res.send(result);
 })
+
+ app.get('/userBooking/:providerEmail', async(req, res) => {
+    const providerEmail = req.params.providerEmail;
+    const products = await userBookingCollection.find({touristEmail:providerEmail}).toArray();
+    res.send(products);
+  });
+ app.get('/wishlist/:providerEmail', async(req, res) => {
+    const providerEmail = req.params.providerEmail;
+    const products = await wishCollection.find({userEmil:providerEmail}).toArray();
+    res.send(products);
+  });
+
 
 // get single id
 
@@ -102,7 +120,77 @@ app.post('/userBooking', async (req, res) => {
   const result = await userBookingCollection.insertOne(item)
   res.send(result);
 })
+// post the users
+app.post('/users', async (req, res) => {
+  const user = req.body;
+  // insert email if user doesnt exists;
+  // you can do this many ways(1.email unique, 2, upsert 3. simple checking)
+  const query = { email: user.email }
+  const existingUser = await usersCollection.findOne(query);
+  if (existingUser) {
+    return res.send({ message: 'user already exists', insertedId: null })
+  }
+  const result = await usersCollection.insertOne(user);
+  res.send(result);
+})
+// make a admin role
+app.patch('/users/admin/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updatedDoc = {
+    $set: {
+      role: 'admin'
+    }
+  }
+  const result = await usersCollection.updateOne(filter, updatedDoc);
+  res.send(result);
+})
+// make the guide
+app.patch('/users/guide/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updatedDoc = {
+    $set: {
+      role: 'guide'
+    }
+  }
+  const result = await usersCollection.updateOne(filter, updatedDoc);
+  res.send(result);
+})
 
+// GET the admin
+
+app.get('/users/admin/:email',async (req, res) => {
+  const email = req.params.email;
+  const query = { email: email }
+  const user = await usersCollection.findOne(query);
+  let admin = false;
+  if (user) {
+    admin = user?.role === 'admin';
+  }
+  res.send({ admin });
+})
+// get the guide
+app.get('/users/guide/:email',async (req, res) => {
+  const email = req.params.email;
+  const query = { email: email }
+  const user = await usersCollection.findOne(query);
+  let guide = false;
+  if (user) {
+    guide = user?.role === 'guide';
+  }
+  res.send({ guide });
+})
+
+// delete 
+ app.delete("/wishlist/:id", async(req,res)=>{
+      const id = req.params.id;
+      const query = {
+          _id: new ObjectId(id),
+      };
+      const result = await wishCollection.deleteOne(query);
+      res.send(result);
+  })
 
 
     // await client.db("admin").command({ ping: 1 });
