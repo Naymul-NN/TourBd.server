@@ -35,6 +35,7 @@ const userBookingCollection = client.db('TourBd').collection('userBooking');
 const allPackageCollection = client.db('TourBd').collection('allpackage');
 const storyCollection = client.db('TourBd').collection('clienTStory');
 const usersCollection = client.db('TourBd').collection('users');
+const newpackageCollection = client.db('TourBd').collection('newpackage');
 
 // get the tabTour
 
@@ -63,6 +64,11 @@ app.get('/clienTStory', async(req, res) => {
 })
 app.get('/clienTStoryall', async(req, res) => {
     const result = await storyCollection.find().toArray();
+    res.send(result);
+})
+// get the booking
+app.get('/userBooking', async(req, res) => {
+    const result = await userBookingCollection.find().toArray();
     res.send(result);
 })
 
@@ -118,6 +124,12 @@ app.post('/wishlist', async (req, res) => {
 app.post('/userBooking', async (req, res) => {
   const item = req.body;
   const result = await userBookingCollection.insertOne(item)
+  res.send(result);
+})
+// new package add
+app.post('/newpackage', async (req, res) => {
+  const item = req.body;
+  const result = await newpackageCollection.insertOne(item)
   res.send(result);
 })
 // post the users
