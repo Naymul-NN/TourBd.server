@@ -194,6 +194,31 @@ app.get('/users/guide/:email',async (req, res) => {
   res.send({ guide });
 })
 
+// change the status
+app.patch('/booking/accept/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updatedDoc = {
+    $set: {
+      status: 'accept'
+    }
+  }
+  const result = await userBookingCollection.updateOne(filter, updatedDoc);
+  res.send(result);
+})
+// reject
+app.patch('/booking/reject/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updatedDoc = {
+    $set: {
+      status: 'rejected'
+    }
+  }
+  const result = await userBookingCollection.updateOne(filter, updatedDoc);
+  res.send(result);
+})
+
 // delete 
  app.delete("/wishlist/:id", async(req,res)=>{
       const id = req.params.id;
